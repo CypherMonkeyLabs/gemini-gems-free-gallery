@@ -16,5 +16,5 @@ external urls checked: 9
   ok: https://img.shields.io/badge/Gallery-offline-F59E0B?style=for-the-badge
   ok: https://img.shields.io/badge/Gems-33-6366F1?style=for-the-badge
   ok: https://img.shields.io/badge/License-CC_BY_4.0_%2B_MIT-0B1220?style=for-the-badge
-FAILURES: 1
-- privacy: found cipher0x9 near 'cipher0x9'
+FAILURES: 0
+All checked links resolved. No personal-detail patterns matched.
