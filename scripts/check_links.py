@@ -21,7 +21,8 @@ BANNED = [
     (r"laxman", "laxman"),
     (r"kadiyala", "kadiyala"),
     (r"\blucky\b", "lucky"),
-    (r"cypher", "cypher"),
+    # Public site host is cyphermonkeylabs.com. Still flag any other "cypher".
+    (r"cypher(?!monkeylabs)", "cypher"),
     (r"cipher0x9", "cipher0x9"),
     (r"\bhermes\b", "hermes"),
     (r"h-1b", "h-1b"),

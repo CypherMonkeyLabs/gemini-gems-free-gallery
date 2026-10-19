@@ -167,14 +167,24 @@ def flow_html(steps: list[tuple[str, str]]) -> str:
     return f'<div class="flow" style="--n:{len(steps)}"><div class="flow-beam" aria-hidden="true"></div><ol>{"".join(items)}</ol></div>'
 
 
-def shell(title: str, desc: str, depth: int, body: str) -> str:
+CSP = (
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+    "img-src 'self' data: blob:; media-src 'self' blob: data:; font-src 'self' data:; "
+    "connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; "
+    "form-action 'self'"
+)
+
+
+def shell(title: str, desc: str, depth: int, body: str, extra_head: str = "") -> str:
     site = "../" * depth
     icon = f"{site}favicon.svg"
     css = f"{site}assets/gallery.css"
     js = f"{site}assets/gallery.js"
+    theme = f"{site}assets/theme-init.js"
     root = "../" * (depth + 1)
     home = f"{site}index.html" if depth else "index.html"
     printable = f"{site}print.html" if depth else "print.html"
+    head_extra = f"\n{extra_head}" if extra_head else ""
     nav = f'''<a class="skip" href="#content">Skip to content</a>
 <header class="nav no-print"><a class="brand" href="{home}"><i></i> Gemini Gems Gallery</a>
 <nav class="nav-links">
@@ -190,12 +200,13 @@ def shell(title: str, desc: str, depth: int, body: str) -> str:
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="{CSP}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
-<meta name="description" content="{esc(desc)}">
+<meta name="description" content="{esc(desc)}">{head_extra}
 <link rel="icon" href="{icon}">
 <link rel="stylesheet" href="{css}">
-<script>(function(){{try{{var t=localStorage.getItem("gems-theme");if(!t&&matchMedia("(prefers-color-scheme: light)").matches)t="light";document.documentElement.dataset.theme=t||"dark";}}catch(e){{document.documentElement.dataset.theme="dark";}}}})();</script>
+<script src="{theme}"></script>
 </head>
 <body>
 {nav}
@@ -291,7 +302,24 @@ def render_index(gems: list[dict], texts: dict[str, str]) -> str:
 <a class="ghost" href="../examples/gem_app.mjs">JavaScript starter</a></p>
 </section>
 </div>'''
-    return shell("Gemini Gems Gallery", "33 copy-ready Gemini Gems with search, themes, and printable instructions.", 0, body)
+    social = """<meta property="og:title" content="Gemini Gems Gallery: 33 free AI Gems">
+<meta property="og:description" content="33 free, copy-ready Gemini Gems with a PDF guide, slides, and app starters. Click to browse and download.">
+<meta property="og:image" content="https://cyphermonkeylabs.com/gemini-gems-free-gallery/site/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://cyphermonkeylabs.com/gemini-gems-free-gallery/site/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gemini Gems Gallery: 33 free AI Gems">
+<meta name="twitter:description" content="33 free, copy-ready Gemini Gems with a PDF guide, slides, and app starters. Click to browse and download.">
+<meta name="twitter:image" content="https://cyphermonkeylabs.com/gemini-gems-free-gallery/site/og-card.png">"""
+    return shell(
+        "Gemini Gems Gallery",
+        "33 copy-ready Gemini Gems with search, themes, and printable instructions.",
+        0,
+        body,
+        social,
+    )
 
 
 def render_gem_page(gem: dict, gems: list[dict], text: str) -> str:
